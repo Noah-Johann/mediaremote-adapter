@@ -75,7 +75,7 @@ public class MediaController {
     }
 
     /// Returns the track info independently from the actual listen process.
-    public func getTrackInfo(_ onReceive: @escaping (TrackInfo?) -> Void) {
+    public func getTrackInfo(exactTime: Bool = false, _ onReceive: @escaping (TrackInfo?) -> Void) {
         guard let scriptPath = perlScriptPath else {
             onReceive(nil)
             return
@@ -96,7 +96,11 @@ public class MediaController {
             arguments.append("--id")
             arguments.append(bundleId)
         }
-        arguments.append(contentsOf: [libraryPath, "get"])
+        arguments.append(contentsOf: [libraryPath, "get", "--now"])
+        
+//        if exactTime == true {
+//            arguments.append("--now")
+//        }
         getProcess.arguments = arguments
 
         let outputPipe = Pipe()

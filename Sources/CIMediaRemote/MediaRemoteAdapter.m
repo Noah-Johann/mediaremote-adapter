@@ -17,6 +17,35 @@
 #import "MediaRemoteAdapter.h"
 #import "MediaRemoteAdapterKeys.h"
 
+static NSNumber *getElapsedTimeNow(NSDictionary *information) {
+    id elapsed = information[(NSString *)kMRMediaRemoteNowPlayingInfoElapsedTime];
+    if (![elapsed isKindOfClass:[NSNumber class]]) {
+        return nil;
+    }
+
+    id timestamp = information[(NSString *)kMRMediaRemoteNowPlayingInfoTimestamp];
+    if (![timestamp isKindOfClass:[NSDate class]]) {
+        return elapsed;
+    }
+
+    NSTimeInterval timestampEpoch = [(NSDate *)timestamp timeIntervalSince1970];
+    NSTimeInterval currentEpoch = [[NSDate date] timeIntervalSince1970];
+    NSTimeInterval timeDiff = currentEpoch - timestampEpoch;
+
+    double playbackRate = 0;
+    id playbackRateVal = information[(NSString *)kMRMediaRemoteNowPlayingInfoPlaybackRate];
+    if ([playbackRateVal isKindOfClass:[NSNumber class]]) {
+        playbackRate = [(NSNumber *)playbackRateVal doubleValue];
+    }
+
+    double realElapsed = [(NSNumber *)elapsed doubleValue];
+    if (playbackRate >= 0) {
+        realElapsed += timeDiff * playbackRate;
+    }
+
+    return @(realElapsed);
+}
+
 static CFRunLoopRef _runLoop = NULL;
 static dispatch_queue_t _queue;
 static dispatch_block_t _debounce_block = NULL;
@@ -117,6 +146,22 @@ convertNowPlayingInformation(NSDictionary *information) {
               return nil;
           }
           return @(floor(elapsedTimeMicros));
+      }
+      return nil;
+    });
+    setValue((NSString *)kElapsedTimeNowMicros, ^id {
+      id elapsedTimeValue =
+          information[(NSString *)kMRMediaRemoteNowPlayingInfoElapsedTime];
+      if (elapsedTimeValue != nil &&
+          [elapsedTimeValue isKindOfClass:[NSNumber class]]) {
+          NSNumber *nowValue = getElapsedTimeNow(information);
+          id baseElapsed = nowValue ?: elapsedTimeValue;
+          NSTimeInterval elapsedTimeNowMicros =
+              [baseElapsed doubleValue] * 1000 * 1000;
+          if (isinf(elapsedTimeNowMicros) || isnan(elapsedTimeNowMicros)) {
+              return nil;
+          }
+          return @(floor(elapsedTimeNowMicros));
       }
       return nil;
     });

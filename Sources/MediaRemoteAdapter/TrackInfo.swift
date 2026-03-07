@@ -23,6 +23,7 @@ public struct TrackInfo: Codable {
         public let isPlaying: Bool?
         public let durationMicros: Double?
         public let elapsedTimeMicros: Double?
+        public let elapsedTimeNowMicros: Double?
         public let applicationName: String?
         public let bundleIdentifier: String?
         public let artworkDataBase64: String?
@@ -65,7 +66,7 @@ public struct TrackInfo: Codable {
         }
 
         enum CodingKeys: String, CodingKey {
-            case title, artist, album, isPlaying, durationMicros, elapsedTimeMicros, applicationName, bundleIdentifier, artworkDataBase64, artworkMimeType, timestampEpochMicros, PID, shuffleMode, repeatMode, playbackRate
+            case title, artist, album, isPlaying, durationMicros, elapsedTimeMicros, elapsedTimeNowMicros, applicationName, bundleIdentifier, artworkDataBase64, artworkMimeType, timestampEpochMicros, PID, shuffleMode, repeatMode, playbackRate
         }
 
         public init(from decoder: Decoder) throws {
@@ -75,6 +76,7 @@ public struct TrackInfo: Codable {
             self.album = try container.decodeIfPresent(String.self, forKey: .album)
             self.durationMicros = try container.decodeIfPresent(Double.self, forKey: .durationMicros)
             self.elapsedTimeMicros = try container.decodeIfPresent(Double.self, forKey: .elapsedTimeMicros)
+            self.elapsedTimeNowMicros = try container.decodeIfPresent(Double.self, forKey: .elapsedTimeNowMicros)
             self.applicationName = try container.decodeIfPresent(String.self, forKey: .applicationName)
             self.bundleIdentifier = try container.decodeIfPresent(String.self, forKey: .bundleIdentifier)
             self.artworkDataBase64 = try container.decodeIfPresent(String.self, forKey: .artworkDataBase64)

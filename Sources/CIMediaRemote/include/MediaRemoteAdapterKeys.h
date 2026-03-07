@@ -12,6 +12,7 @@ extern NSString *const kAlbum;
 extern NSString *const kIsPlaying;
 extern NSString *const kDurationMicros;
 extern NSString *const kElapsedTimeMicros;
+extern NSString *const kElapsedTimeNowMicros;
 extern NSString *const kBundleIdentifier;
 extern NSString *const kApplicationName;
 extern NSString *const kArtworkDataBase64;

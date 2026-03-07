@@ -9,6 +9,7 @@ NSString *const kAlbum = @"album";
 NSString *const kIsPlaying = @"isPlaying";
 NSString *const kDurationMicros = @"durationMicros";
 NSString *const kElapsedTimeMicros = @"elapsedTimeMicros";
+NSString *const kElapsedTimeNowMicros = @"elapsedTimeNowMicros";
 NSString *const kBundleIdentifier = @"bundleIdentifier";
 NSString *const kApplicationName = @"applicationName";
 NSString *const kArtworkDataBase64 = @"artworkDataBase64";
