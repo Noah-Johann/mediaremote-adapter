@@ -96,7 +96,7 @@ public class MediaController {
             arguments.append("--id")
             arguments.append(bundleId)
         }
-        arguments.append(contentsOf: [libraryPath, "get", "--now"])
+        arguments.append(contentsOf: [libraryPath, "get"])
         
 //        if exactTime == true {
 //            arguments.append("--now")
