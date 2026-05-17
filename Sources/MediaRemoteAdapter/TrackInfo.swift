@@ -36,6 +36,7 @@ public struct TrackInfo: Codable {
         public let shuffleMode: ShuffleMode?
         public let repeatMode: RepeatMode?
         public let playbackRate: Double?
+        public let isLiveStream: Bool?
 
         public let artwork: NSImage?
 
@@ -65,7 +66,7 @@ public struct TrackInfo: Codable {
         }
 
         enum CodingKeys: String, CodingKey {
-            case title, artist, album, isPlaying, durationMicros, elapsedTimeMicros, applicationName, bundleIdentifier, artworkDataBase64, artworkMimeType, timestampEpochMicros, PID, shuffleMode, repeatMode, playbackRate
+            case title, artist, album, isPlaying, durationMicros, elapsedTimeMicros, applicationName, bundleIdentifier, artworkDataBase64, artworkMimeType, timestampEpochMicros, PID, shuffleMode, repeatMode, playbackRate, isLiveStream
         }
 
         public init(
@@ -84,6 +85,7 @@ public struct TrackInfo: Codable {
             shuffleMode: ShuffleMode? = nil,
             repeatMode: RepeatMode? = nil,
             playbackRate: Double? = nil,
+            isLiveStream: Bool? = nil,
             artwork: NSImage? = nil
         ) {
             self.title = title
@@ -101,6 +103,7 @@ public struct TrackInfo: Codable {
             self.shuffleMode = shuffleMode
             self.repeatMode = repeatMode
             self.playbackRate = playbackRate
+            self.isLiveStream = isLiveStream
             self.artwork = artwork
         }
 
@@ -129,6 +132,7 @@ public struct TrackInfo: Codable {
             self.shuffleMode = try? container.decodeIfPresent(ShuffleMode.self, forKey: .shuffleMode)
             self.repeatMode = try? container.decodeIfPresent(RepeatMode.self, forKey: .repeatMode)
             self.playbackRate = try container.decodeIfPresent(Double.self, forKey: .playbackRate)
+            self.isLiveStream = try? container.decodeFlexibleBool(forKey: .isLiveStream)
 
             if let boolValue = try? container.decode(Bool.self, forKey: .isPlaying) {
                 self.isPlaying = boolValue
@@ -147,3 +151,25 @@ public struct TrackInfo: Codable {
         }
     }
 } 
+
+private extension KeyedDecodingContainer {
+    func decodeFlexibleBool(forKey key: Key) throws -> Bool? {
+        if let boolValue = try? decodeIfPresent(Bool.self, forKey: key) {
+            return boolValue
+        }
+
+        if let intValue = try? decodeIfPresent(Int.self, forKey: key) {
+            return intValue == 1
+        }
+
+        if let doubleValue = try? decodeIfPresent(Double.self, forKey: key) {
+            return doubleValue == 1.0
+        }
+
+        if let stringValue = try? decodeIfPresent(String.self, forKey: key) {
+            return stringValue == "1" || stringValue.lowercased() == "true"
+        }
+
+        return nil
+    }
+}

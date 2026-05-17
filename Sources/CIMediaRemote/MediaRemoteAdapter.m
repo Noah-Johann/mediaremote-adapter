@@ -92,6 +92,21 @@ convertNowPlayingInformation(NSDictionary *information) {
     setKey((NSString *)kTitle, (id)kMRMediaRemoteNowPlayingInfoTitle);
     setKey((NSString *)kArtist, (id)kMRMediaRemoteNowPlayingInfoArtist);
     setKey((NSString *)kAlbum, (id)kMRMediaRemoteNowPlayingInfoAlbum);
+    setValue((NSString *)kIsLiveStream, ^id {
+      NSNumber *isLiveStream =
+          information[@"MPNowPlayingInfoPropertyIsLiveStream"] ?:
+          information[@"kMRMediaRemoteNowPlayingInfoIsLiveStream"];
+      if (isLiveStream != nil) {
+          return @([isLiveStream boolValue]);
+      }
+
+      id duration = information[(NSString *)kMRMediaRemoteNowPlayingInfoDuration];
+      if (duration != nil && isinf([duration doubleValue])) {
+          return @YES;
+      }
+
+      return @NO;
+    });
     setValue((NSString *)kDurationMicros, ^id {
       id duration =
           information[(NSString *)kMRMediaRemoteNowPlayingInfoDuration];
